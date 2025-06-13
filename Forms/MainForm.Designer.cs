@@ -33,14 +33,14 @@
             recipientsComboBox = new ComboBox();
             StartNumberTextBox = new TextBox();
             EndNumberTextBox = new TextBox();
-            dataGridView1 = new DataGridView();
+            BlanksGridView = new DataGridView();
             seriesComboBox = new ComboBox();
             menuStrip1 = new MenuStrip();
             menu = new ToolStripMenuItem();
             addDocumentMenuItem = new ToolStripMenuItem();
             addRecipientsMenuItem = new ToolStripMenuItem();
             addSeriesMenuItem = new ToolStripMenuItem();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)BlanksGridView).BeginInit();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -52,6 +52,7 @@
             addButton.TabIndex = 0;
             addButton.Text = "Добавить";
             addButton.UseVisualStyleBackColor = true;
+            addButton.Click += addButton_Click;
             // 
             // documentsComboBox
             // 
@@ -87,15 +88,21 @@
             EndNumberTextBox.TabIndex = 4;
             EndNumberTextBox.KeyPress += NumberTextBox_KeyPress;
             // 
-            // dataGridView1
+            // BlanksGridView
             // 
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Dock = DockStyle.Bottom;
-            dataGridView1.Location = new Point(0, 111);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(800, 339);
-            dataGridView1.TabIndex = 5;
+            BlanksGridView.AllowUserToAddRows = false;
+            BlanksGridView.AllowUserToDeleteRows = false;
+            BlanksGridView.AllowUserToResizeColumns = false;
+            BlanksGridView.AllowUserToResizeRows = false;
+            BlanksGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            BlanksGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            BlanksGridView.Location = new Point(0, 111);
+            BlanksGridView.Name = "BlanksGridView";
+            BlanksGridView.RowHeadersWidth = 51;
+            BlanksGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            BlanksGridView.Size = new Size(800, 339);
+            BlanksGridView.TabIndex = 5;
+            BlanksGridView.CellClick += BlanksGridView_CellClick;
             // 
             // seriesComboBox
             // 
@@ -150,7 +157,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(seriesComboBox);
-            Controls.Add(dataGridView1);
+            Controls.Add(BlanksGridView);
             Controls.Add(EndNumberTextBox);
             Controls.Add(StartNumberTextBox);
             Controls.Add(recipientsComboBox);
@@ -161,7 +168,7 @@
             Text = "Form1";
             FormClosing += Form1_FormClosing;
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)BlanksGridView).EndInit();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -175,7 +182,7 @@
         private ComboBox recipientsComboBox;
         private TextBox StartNumberTextBox;
         private TextBox EndNumberTextBox;
-        private DataGridView dataGridView1;
+        private DataGridView BlanksGridView;
         private ComboBox seriesComboBox;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem menu;
