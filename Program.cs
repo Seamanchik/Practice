@@ -1,4 +1,4 @@
-namespace BelTel
+namespace Practice
 {
     internal static class Program
     {

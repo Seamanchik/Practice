@@ -1,9 +1,9 @@
-﻿using BelTel.Models;
+﻿using Practice.Models;
 using Practice.Models;
 using Practice.ViewModels;
 using System.Data.SQLite;
 
-namespace BelTel.Database
+namespace Practice.Database
 {
     public class DatabaseHelper
     {
@@ -11,6 +11,7 @@ namespace BelTel.Database
         {
             var list = new List<Document>();
 
+            Database.OpenConnection();
             using (var cmd = new SQLiteCommand("SELECT id, name FROM documents", Database.GetConnection()))
             using (var reader = cmd.ExecuteReader())
             {
@@ -24,33 +25,37 @@ namespace BelTel.Database
                 }
             }
 
+            Database.CloseConnection();
             return list;
         }
 
         public static List<Recipient> GetRecipients()
         {
-            var list = new List<Recipient>();
+            var recipients = new List<Recipient>();
+            const string query = "SELECT id, name FROM recipients";
 
-            using (var cmd = new SQLiteCommand("SELECT id, name FROM recipients", Database.GetConnection()))
-            using (var reader = cmd.ExecuteReader())
+            Database.OpenConnection();
+            using var cmd = new SQLiteCommand(query, Database.GetConnection());
+            using var reader = cmd.ExecuteReader();
+
+            while (reader.Read())
             {
-                while (reader.Read())
+                recipients.Add(new Recipient
                 {
-                    list.Add(new Recipient
-                    {
-                        Id = reader.GetInt32(0),
-                        Name = reader.GetString(1)
-                    });
-                }
+                    Id = Convert.ToInt32(reader["id"]),
+                    Name = reader["name"].ToString()!
+                });
             }
 
-            return list;
+            Database.CloseConnection();
+            return recipients;
         }
 
         public static List<Series> GetSeries()
         {
             var list = new List<Series>();
 
+            Database.OpenConnection();
             using (var cmd = new SQLiteCommand("SELECT id, name FROM series", Database.GetConnection()))
             using (var reader = cmd.ExecuteReader())
             {
@@ -64,6 +69,7 @@ namespace BelTel.Database
                 }
             }
 
+            Database.CloseConnection();
             return list;
         }
 
@@ -209,6 +215,36 @@ namespace BelTel.Database
 
             Database.CloseConnection();
         }
+
+        public static void UpdateBlankProductNameByNumber(int blankNumber, string productName)
+        {
+            const string query = "UPDATE blanks SET product_name = @productName WHERE number_blank = @number";
+
+            Database.OpenConnection();
+
+            using var cmd = new SQLiteCommand(query, Database.GetConnection());
+            cmd.Parameters.AddWithValue("@productName", productName);
+            cmd.Parameters.AddWithValue("@number", blankNumber);
+
+            cmd.ExecuteNonQuery();
+
+            Database.CloseConnection();
+        }
+
+        public static void UpdateBlankRecipientByNumber(int blankNumber, int recipientId)
+        {
+            const string query = "UPDATE blanks SET recipient_id = @recipientId WHERE number_blank = @number";
+
+            Database.OpenConnection();
+
+            using var cmd = new SQLiteCommand(query, Database.GetConnection());
+            cmd.Parameters.AddWithValue("@recipientId", recipientId);
+            cmd.Parameters.AddWithValue("@number", blankNumber);
+            cmd.ExecuteNonQuery();
+
+            Database.CloseConnection();
+        }
+
 
         public static bool AreBlanksNumberRangeAvailable(int startNumber, int endNumber)
         {

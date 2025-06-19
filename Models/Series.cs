@@ -1,4 +1,4 @@
-﻿namespace BelTel.Models
+﻿namespace Practice.Models
 {
     public class Series
     {

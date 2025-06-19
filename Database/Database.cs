@@ -1,6 +1,6 @@
 ﻿using System.Data.SQLite;
 
-namespace BelTel.Database
+namespace Practice.Database
 {
     public class Database
     {

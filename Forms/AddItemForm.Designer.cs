@@ -1,4 +1,4 @@
-﻿namespace BelTel.Forms
+﻿namespace Practice.Forms
 {
     partial class AddItemForm
     {
@@ -36,42 +36,52 @@
             // lblTitle
             // 
             lblTitle.AutoSize = true;
-            lblTitle.Location = new Point(12, 9);
+            lblTitle.Font = new Font("Segoe UI", 11F, FontStyle.Bold, GraphicsUnit.Point);
+            lblTitle.Location = new Point(20, 20);
             lblTitle.Name = "lblTitle";
-            lblTitle.Size = new Size(50, 20);
+            lblTitle.Size = new Size(140, 25);
             lblTitle.TabIndex = 0;
-            lblTitle.Text = "label1";
+            lblTitle.Text = "Введите значение:";
             // 
             // txtInput
             // 
-            txtInput.Location = new Point(12, 32);
+            txtInput.Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            txtInput.Location = new Point(20, 55);
             txtInput.Name = "txtInput";
-            txtInput.Size = new Size(245, 27);
+            txtInput.Size = new Size(320, 30);
             txtInput.TabIndex = 1;
             // 
             // btnSave
             // 
-            btnSave.Location = new Point(12, 77);
+            btnSave.Font = new Font("Segoe UI", 10F, FontStyle.Bold, GraphicsUnit.Point);
+            btnSave.BackColor = Color.SteelBlue;
+            btnSave.ForeColor = Color.White;
+            btnSave.FlatStyle = FlatStyle.Flat;
+            btnSave.FlatAppearance.BorderSize = 0;
+            btnSave.Location = new Point(20, 105);
             btnSave.Name = "btnSave";
-            btnSave.Size = new Size(245, 52);
+            btnSave.Size = new Size(320, 40);
             btnSave.TabIndex = 2;
             btnSave.Text = "Добавить";
-            btnSave.UseVisualStyleBackColor = true;
+            btnSave.UseVisualStyleBackColor = false;
             btnSave.Click += btnSave_Click;
             // 
             // AddItemForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(269, 141);
+            BackColor = Color.WhiteSmoke;
+            ClientSize = new Size(360, 170);
             Controls.Add(btnSave);
             Controls.Add(txtInput);
             Controls.Add(lblTitle);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Font = new Font("Segoe UI", 10F, FontStyle.Regular, GraphicsUnit.Point);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "AddItemForm";
-            Text = "AddElementForm";
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Добавление элемента";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -1,7 +1,7 @@
-﻿using BelTel.Database;
+﻿using Practice.Database;
 using System.Text.RegularExpressions;
 
-namespace BelTel.Forms
+namespace Practice.Forms
 {
     public partial class AddItemForm : Form
     {

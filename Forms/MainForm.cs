@@ -1,33 +1,25 @@
-using BelTel.Database;
-using BelTel.Forms;
-using BelTel.Models;
+using Practice.Database;
+using Practice.Forms;
+using Practice.Models;
 
-namespace BelTel
+namespace Practice
 {
     public partial class MainForm : Form
     {
         private DateTimePicker datePicker = new DateTimePicker();
         private bool datePickerVisible = false;
 
+        private ComboBox recipientComboBox = new ComboBox();
+        private bool isComboBoxShown = false;
+
         public MainForm()
         {
             InitializeComponent();
-
-            try
-            {
-                Database.Database.OpenConnection();
-                MessageBox.Show("База данных подключена успешно!");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка подключения: " + ex.Message);
-            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             documentsComboBox.DataSource = DatabaseHelper.GetDocuments();
-            recipientsComboBox.DataSource = DatabaseHelper.GetRecipients();
             seriesComboBox.DataSource = DatabaseHelper.GetSeries();
             LoadBlanksToGrid();
             datePicker.Visible = false;
@@ -102,6 +94,50 @@ namespace BelTel
 
         private void BlanksGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (recipientComboBox != null)
+            {
+                BlanksGridView.Controls.Remove(recipientComboBox);
+                recipientComboBox.Dispose();
+                recipientComboBox = null;
+            }
+
+            if (e.RowIndex >= 0 && BlanksGridView.Columns[e.ColumnIndex].Name == "RecipientName")
+            {
+                recipientComboBox = new ComboBox
+                {
+                    DropDownStyle = ComboBoxStyle.DropDownList
+                };
+
+                var recipients = DatabaseHelper.GetRecipients();
+                recipientComboBox.DataSource = recipients;
+                recipientComboBox.DisplayMember = "Name";
+                recipientComboBox.ValueMember = "Id";
+
+                string currentRecipient = BlanksGridView.Rows[e.RowIndex].Cells[e.ColumnIndex].Value?.ToString();
+                var selectedRecipient = recipients.FirstOrDefault(r => r.Name == currentRecipient);
+                if (selectedRecipient != null)
+                    recipientComboBox.SelectedItem = selectedRecipient;
+
+                var cellRect = BlanksGridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
+                recipientComboBox.Bounds = cellRect;
+
+                recipientComboBox.SelectedValueChanged += (s, ev) =>
+                {
+                    var selectedRecipient = (Recipient)recipientComboBox.SelectedItem!;
+                    BlanksGridView.Rows[e.RowIndex].Cells["RecipientName"].Value = selectedRecipient.Name;
+
+                    int blankNumber = Convert.ToInt32(BlanksGridView.Rows[e.RowIndex].Cells["BlankNumber"].Value);
+                    DatabaseHelper.UpdateBlankRecipientByNumber(blankNumber, selectedRecipient.Id);
+
+                    BlanksGridView.Controls.Remove(recipientComboBox);
+                    recipientComboBox.Dispose();
+                    recipientComboBox = null;
+                };
+
+                BlanksGridView.Controls.Add(recipientComboBox);
+                recipientComboBox.Focus();
+            }
+
             if (BlanksGridView.Columns[e.ColumnIndex].Name == "Date" && e.RowIndex >= 0)
             {
                 Rectangle cellRectangle = BlanksGridView.GetCellDisplayRectangle(e.ColumnIndex, e.RowIndex, true);
@@ -148,5 +184,30 @@ namespace BelTel
             datePicker.Visible = false;
             datePickerVisible = false;
         }
+
+        private void BlanksGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (BlanksGridView.Columns[e.ColumnIndex].Name == "ProductName")
+            {
+                try
+                {
+                    int blankNumber = Convert.ToInt32(BlanksGridView.Rows[e.RowIndex].Cells["BlankNumber"].Value);
+                    string? productName = BlanksGridView.Rows[e.RowIndex].Cells["ProductName"].Value?.ToString();
+
+                    if (productName != null)
+                        DatabaseHelper.UpdateBlankProductNameByNumber(blankNumber, productName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при сохранении названия товара: " + ex.Message);
+                }
+            }
+        }
+
+        private void viewDocumentMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Document).ShowDialog();
+
+        private void viewRecipientsMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Recipient).ShowDialog();
+
+        private void viewSeriesMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Series).ShowDialog();
     }
 }
