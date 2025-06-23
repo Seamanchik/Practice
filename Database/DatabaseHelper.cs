@@ -1,5 +1,4 @@
 ﻿using Practice.Models;
-using Practice.Models;
 using Practice.ViewModels;
 using System.Data.SQLite;
 
@@ -73,45 +72,6 @@ namespace Practice.Database
             return list;
         }
 
-        public static List<BlankViewModel> GetAllBlanks()
-        {
-            var list = new List<BlankViewModel>();
-
-            Database.OpenConnection();
-
-            var command = new SQLiteCommand(@"
-        SELECT 
-            b.number_blank,
-            b.date,
-            b.product_name,
-            r.name AS recipient_name,
-            x.series,
-            d.name AS document_name
-        FROM blanks b
-        JOIN box x ON b.box_id = x.id
-        JOIN documents d ON x.document_id = d.id
-        LEFT JOIN recipients r ON b.recipient_id = r.id
-        ORDER BY b.number_blank;
-    ", Database.GetConnection());
-
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                list.Add(new BlankViewModel
-                {
-                    BlankNumber = Convert.ToInt32(reader["number_blank"]),
-                    Date = reader["date"] != DBNull.Value ? DateTime.Parse(reader["date"].ToString()) : (DateTime?)null,
-                    ProductName = reader["product_name"]?.ToString(),
-                    RecipientName = reader["recipient_name"]?.ToString(),
-                    Series = reader["series"]?.ToString(),
-                    DocumentName = reader["document_name"]?.ToString()
-                });
-            }
-
-            Database.CloseConnection();
-            return list;
-        }
-
         public static Blank? GetBlankByNumber(int blankNumber)
         {
             Blank? blank = null;
@@ -138,6 +98,88 @@ namespace Practice.Database
 
             Database.CloseConnection();
             return blank;
+        }
+
+        public static List<BlankViewModel> GetBlanksByBox(BoxViewModel box)
+        {
+            var list = new List<BlankViewModel>();
+
+            Database.OpenConnection();
+
+            var command = new SQLiteCommand(@"
+        SELECT 
+            b.number_blank,
+            b.date,
+            b.product_name,
+            r.name AS recipient_name,
+            x.series,
+            d.name AS document_name
+        FROM blanks b
+        JOIN box x ON b.box_id = x.id
+        JOIN documents d ON x.document_id = d.id
+        LEFT JOIN recipients r ON b.recipient_id = r.id
+        WHERE b.number_blank BETWEEN @start AND @end
+          AND x.series = @series
+          AND d.name = @docName
+        ORDER BY b.number_blank;
+    ", Database.GetConnection());
+
+            command.Parameters.AddWithValue("@start", box.StartNumber);
+            command.Parameters.AddWithValue("@end", box.EndNumber);
+            command.Parameters.AddWithValue("@series", box.Series);
+            command.Parameters.AddWithValue("@docName", box.DocumentName);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new BlankViewModel
+                {
+                    BlankNumber = Convert.ToInt32(reader["number_blank"]),
+                    Date = reader["date"] != DBNull.Value ? DateTime.Parse(reader["date"].ToString()) : (DateTime?)null,
+                    ProductName = reader["product_name"]?.ToString(),
+                    RecipientName = reader["recipient_name"]?.ToString(),
+                    Series = reader["series"]?.ToString(),
+                    DocumentName = reader["document_name"]?.ToString()
+                });
+            }
+
+            Database.CloseConnection();
+            return list;
+        }
+
+        public static List<BoxViewModel> GetBoxes()
+        {
+            var boxes = new List<BoxViewModel>();
+
+            Database.OpenConnection();
+
+            var command = new SQLiteCommand(@"
+    SELECT 
+        MIN(b.number_blank) AS start_number,
+        MAX(b.number_blank) AS end_number,
+        x.series,
+        d.name AS document_name
+    FROM box x
+    JOIN blanks b ON b.box_id = x.id
+    JOIN documents d ON x.document_id = d.id
+    GROUP BY x.id, x.series, d.name
+    ORDER BY MIN(b.number_blank);
+", Database.GetConnection());
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                boxes.Add(new BoxViewModel
+                {
+                    StartNumber = Convert.ToInt32(reader["start_number"]),
+                    EndNumber = Convert.ToInt32(reader["end_number"]),
+                    Series = reader["series"].ToString(),
+                    DocumentName = reader["document_name"].ToString()
+                });
+            }
+
+            Database.CloseConnection();
+            return boxes;
         }
 
         public static void AddDocument(string name)
@@ -244,7 +286,6 @@ namespace Practice.Database
 
             Database.CloseConnection();
         }
-
 
         public static bool AreBlanksNumberRangeAvailable(int startNumber, int endNumber)
         {

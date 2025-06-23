@@ -134,7 +134,6 @@ namespace Practice
             BlanksGridView.Size = new Size(900, 390);
             BlanksGridView.TabIndex = 5;
             BlanksGridView.CellClick += BlanksGridView_CellClick;
-            BlanksGridView.CellValueChanged += BlanksGridView_CellValueChanged;
             // 
             // seriesComboBox
             // 
