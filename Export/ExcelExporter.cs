@@ -37,13 +37,22 @@ namespace Practice.Export
                 var exportedKeys = new HashSet<string>();
                 int lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 1;
 
+                int ppNumber = 1;
                 for (int row = 2; row <= lastRow; row++)
                 {
                     string? series = worksheet.Cell(row, 4).GetString();
                     string? number = worksheet.Cell(row, 5).GetString();
 
                     if (!string.IsNullOrWhiteSpace(series) && !string.IsNullOrWhiteSpace(number))
+                    {
                         exportedKeys.Add($"{series}_{number}");
+
+                        var cellValue = worksheet.Cell(row, 1).GetValue<string>();
+                        if (int.TryParse(cellValue, out int existingPp))
+                        {
+                            ppNumber = Math.Max(ppNumber, existingPp + 1);
+                        }
+                    }
                 }
 
                 int currentRow = lastRow + 1;
@@ -62,6 +71,7 @@ namespace Practice.Export
                     string key = $"{box.Series}_{blank.BlankNumber}";
                     if (exportedKeys.Contains(key)) continue;
 
+                    worksheet.Cell(currentRow, 1).Value = ppNumber++; // № п.п.
                     worksheet.Cell(currentRow, 2).Value = documentName;
                     worksheet.Cell(currentRow, 3).Value = blank.Date.Value.ToString("dd.MM.yyyy");
                     worksheet.Cell(currentRow, 4).Value = box.Series;
