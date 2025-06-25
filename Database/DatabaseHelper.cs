@@ -72,6 +72,64 @@ namespace Practice.Database
             return list;
         }
 
+        public static List<Blank> GetBlanks()
+        {
+            var blanks = new List<Blank>();
+
+            Database.OpenConnection();
+
+            string query = "SELECT id, number_blank, box_id, date, recipient_id, product_name FROM blanks";
+
+            using var command = new SQLiteCommand(query, Database.GetConnection());
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var blank = new Blank
+                {
+                    Id = reader.GetInt32(0),
+                    BlankNumber = reader.GetInt32(1),
+                    BoxId = reader.GetInt32(2),
+                    Date = reader["date"] != DBNull.Value ? DateTime.Parse(reader["date"].ToString()) : (DateTime?)null,
+                    RecipientId = reader.IsDBNull(4) ? (int?)null : reader.GetInt32(4),
+                    ProductName = reader.IsDBNull(5) ? null : reader.GetString(5)
+                };
+
+                blanks.Add(blank);
+            }
+            Database.CloseConnection();
+
+            return blanks;
+        }
+
+        public static List<Box> GetBoxes()
+        {
+            var boxes = new List<Box>();
+
+            Database.OpenConnection();
+            string query = "SELECT id, start_number, end_number, series, document_id FROM box";
+
+            using var command = new SQLiteCommand(query, Database.GetConnection());
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                var box = new Box
+                {
+                    Id = reader.GetInt32(0),
+                    StartNumber = reader.GetInt32(1),
+                    EndNumber = reader.GetInt32(2),
+                    Series = reader.GetString(3),
+                    DocumentId = reader.GetInt32(4)
+                };
+
+                boxes.Add(box);
+            }
+
+            Database.CloseConnection();
+            return boxes;
+        }
+
         public static Blank? GetBlankByNumber(int blankNumber)
         {
             Blank? blank = null;
@@ -147,7 +205,7 @@ namespace Practice.Database
             return list;
         }
 
-        public static List<BoxViewModel> GetBoxes()
+        public static List<BoxViewModel> GetBoxesForDataGrid()
         {
             var boxes = new List<BoxViewModel>();
 

@@ -1,4 +1,5 @@
 using Practice.Database;
+using Practice.Export;
 using Practice.Forms;
 using Practice.Models;
 using Practice.ViewModels;
@@ -21,7 +22,7 @@ namespace Practice
 
         private void LoadBlanksToGrid()
         {
-            var blanks = DatabaseHelper.GetBoxes();
+            var blanks = DatabaseHelper.GetBoxesForDataGrid();
             BlanksGridView.DataSource = blanks;
         }
 
@@ -93,6 +94,51 @@ namespace Practice
                 var form = new BlanksInBoxForm(box);
                 form.ShowDialog();
             }
+        }
+
+        private void exportBtn_Click(object sender, EventArgs e)
+        {
+            var documents = DatabaseHelper.GetDocuments();
+            var blanks = DatabaseHelper.GetBlanks();
+            var boxes = DatabaseHelper.GetBoxes();
+            var recipients = DatabaseHelper.GetRecipients();
+
+            var documentFileMap = new Dictionary<string, string>();
+
+            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            foreach (var doc in documents)
+            {
+                string normalizedName = doc.Name.Replace("-", "_");
+
+                string fileName = $"Учет_бланков_строгой_отчетности_{normalizedName}_2025.xlsx";
+
+                string projectPath = Path.Combine(projectDirectory, fileName);
+                string desktopPathFull = Path.Combine(desktopPath, fileName);
+
+                if (File.Exists(projectPath))
+                    documentFileMap[doc.Name] = projectPath;
+                else if (File.Exists(desktopPathFull))
+                    documentFileMap[doc.Name] = desktopPathFull;
+                else
+                    MessageBox.Show($"Файл для документа \"{doc.Name}\" не найден:\n{fileName}", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            if (documentFileMap.Count > 0)
+            {
+                ExcelExporter.ExportFilledBlanksByDocumentType(
+                    documentFileMap,
+                    blanks,
+                    boxes,
+                    documents,
+                    recipients
+                );
+
+                MessageBox.Show("Экспорт завершён.", "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+                MessageBox.Show("Не найдено ни одного подходящего Excel-файла для экспорта.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         private void viewDocumentMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Document).ShowDialog();

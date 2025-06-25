@@ -43,7 +43,7 @@ namespace Practice.Forms
             switch (_itemType)
             {
                 case AddItemType.Document:
-                    if (!Regex.IsMatch(input, @"^[a-zA-Z0-9]+$"))
+                    if (!Regex.IsMatch(input, @"^[a-zA-Z0-9А-Яа-я\-]+$"))
                     {
                         MessageBox.Show("Название может содержать только буквы и цифры.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;

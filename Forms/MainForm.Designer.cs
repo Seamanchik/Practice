@@ -47,6 +47,7 @@ namespace Practice
             addSeriesMenuItem = new ToolStripMenuItem();
             viewSeriesMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1 = new TableLayoutPanel();
+            exportBtn = new Button();
             ((System.ComponentModel.ISupportInitialize)BlanksGridView).BeginInit();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -59,10 +60,10 @@ namespace Practice
             addButton.FlatAppearance.BorderSize = 0;
             addButton.FlatStyle = FlatStyle.Flat;
             addButton.ForeColor = Color.White;
-            addButton.Location = new Point(722, 10);
+            addButton.Location = new Point(602, 10);
             addButton.Margin = new Padding(5);
             addButton.Name = "addButton";
-            addButton.Size = new Size(168, 30);
+            addButton.Size = new Size(138, 30);
             addButton.TabIndex = 4;
             addButton.Text = "Добавить";
             addButton.UseVisualStyleBackColor = false;
@@ -72,10 +73,10 @@ namespace Practice
             // 
             documentsComboBox.Dock = DockStyle.Fill;
             documentsComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            documentsComboBox.Location = new Point(366, 10);
+            documentsComboBox.Location = new Point(306, 10);
             documentsComboBox.Margin = new Padding(5);
             documentsComboBox.Name = "documentsComboBox";
-            documentsComboBox.Size = new Size(168, 31);
+            documentsComboBox.Size = new Size(138, 31);
             documentsComboBox.TabIndex = 2;
             // 
             // StartNumberTextBox
@@ -84,17 +85,17 @@ namespace Practice
             StartNumberTextBox.Location = new Point(10, 10);
             StartNumberTextBox.Margin = new Padding(5);
             StartNumberTextBox.Name = "StartNumberTextBox";
-            StartNumberTextBox.Size = new Size(168, 30);
+            StartNumberTextBox.Size = new Size(138, 30);
             StartNumberTextBox.TabIndex = 0;
             StartNumberTextBox.KeyPress += NumberTextBox_KeyPress;
             // 
             // EndNumberTextBox
             // 
             EndNumberTextBox.Dock = DockStyle.Fill;
-            EndNumberTextBox.Location = new Point(188, 10);
+            EndNumberTextBox.Location = new Point(158, 10);
             EndNumberTextBox.Margin = new Padding(5);
             EndNumberTextBox.Name = "EndNumberTextBox";
-            EndNumberTextBox.Size = new Size(168, 30);
+            EndNumberTextBox.Size = new Size(138, 30);
             EndNumberTextBox.TabIndex = 1;
             EndNumberTextBox.KeyPress += NumberTextBox_KeyPress;
             // 
@@ -139,10 +140,10 @@ namespace Practice
             // 
             seriesComboBox.Dock = DockStyle.Fill;
             seriesComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-            seriesComboBox.Location = new Point(544, 10);
+            seriesComboBox.Location = new Point(454, 10);
             seriesComboBox.Margin = new Padding(5);
             seriesComboBox.Name = "seriesComboBox";
-            seriesComboBox.Size = new Size(168, 31);
+            seriesComboBox.Size = new Size(138, 31);
             seriesComboBox.TabIndex = 3;
             // 
             // menuStrip1
@@ -210,7 +211,8 @@ namespace Practice
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.ColumnCount = 5;
+            tableLayoutPanel1.ColumnCount = 6;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 20F));
@@ -221,14 +223,31 @@ namespace Practice
             tableLayoutPanel1.Controls.Add(documentsComboBox, 2, 0);
             tableLayoutPanel1.Controls.Add(seriesComboBox, 3, 0);
             tableLayoutPanel1.Controls.Add(addButton, 4, 0);
+            tableLayoutPanel1.Controls.Add(exportBtn, 5, 0);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 28);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.Padding = new Padding(5);
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(900, 40);
             tableLayoutPanel1.TabIndex = 1;
+            // 
+            // exportBtn
+            // 
+            exportBtn.BackColor = Color.FromArgb(70, 130, 180);
+            exportBtn.FlatAppearance.BorderSize = 0;
+            exportBtn.FlatStyle = FlatStyle.Flat;
+            exportBtn.ForeColor = Color.White;
+            exportBtn.Location = new Point(750, 10);
+            exportBtn.Margin = new Padding(5);
+            exportBtn.Name = "exportBtn";
+            exportBtn.Size = new Size(140, 30);
+            exportBtn.TabIndex = 8;
+            exportBtn.Text = "Экспорт";
+            exportBtn.UseVisualStyleBackColor = false;
+            exportBtn.Click += exportBtn_Click;
             // 
             // MainForm
             // 
@@ -271,5 +290,6 @@ namespace Practice
         private ToolStripMenuItem viewRecipientsMenuItem;
         private ToolStripMenuItem viewSeriesMenuItem;
         private TableLayoutPanel tableLayoutPanel1;
+        private Button exportBtn;
     }
 }
