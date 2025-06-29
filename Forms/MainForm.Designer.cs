@@ -48,9 +48,13 @@ namespace Practice
             viewSeriesMenuItem = new ToolStripMenuItem();
             tableLayoutPanel1 = new TableLayoutPanel();
             exportBtn = new Button();
+            datePanel = new TableLayoutPanel();
+            fromDatePicker = new DateTimePicker();
+            toDatePicker = new DateTimePicker();
             ((System.ComponentModel.ISupportInitialize)BlanksGridView).BeginInit();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
+            datePanel.SuspendLayout();
             SuspendLayout();
             // 
             // addButton
@@ -127,7 +131,7 @@ namespace Practice
             BlanksGridView.DefaultCellStyle = dataGridViewCellStyle2;
             BlanksGridView.EnableHeadersVisualStyles = false;
             BlanksGridView.GridColor = Color.LightGray;
-            BlanksGridView.Location = new Point(0, 128);
+            BlanksGridView.Location = new Point(0, 151);
             BlanksGridView.Name = "BlanksGridView";
             BlanksGridView.RowHeadersVisible = false;
             BlanksGridView.RowHeadersWidth = 51;
@@ -224,14 +228,15 @@ namespace Practice
             tableLayoutPanel1.Controls.Add(seriesComboBox, 3, 0);
             tableLayoutPanel1.Controls.Add(addButton, 4, 0);
             tableLayoutPanel1.Controls.Add(exportBtn, 5, 0);
+            tableLayoutPanel1.Controls.Add(datePanel, 5, 1);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 28);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.Padding = new Padding(5);
-            tableLayoutPanel1.RowCount = 1;
+            tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(900, 40);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
+            tableLayoutPanel1.Size = new Size(900, 125);
             tableLayoutPanel1.TabIndex = 1;
             // 
             // exportBtn
@@ -243,11 +248,44 @@ namespace Practice
             exportBtn.Location = new Point(750, 10);
             exportBtn.Margin = new Padding(5);
             exportBtn.Name = "exportBtn";
-            exportBtn.Size = new Size(140, 30);
+            exportBtn.Size = new Size(101, 30);
             exportBtn.TabIndex = 8;
             exportBtn.Text = "Экспорт";
             exportBtn.UseVisualStyleBackColor = false;
             exportBtn.Click += exportBtn_Click;
+            // 
+            // datePanel
+            // 
+            datePanel.ColumnCount = 1;
+            datePanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
+            datePanel.Controls.Add(fromDatePicker, 0, 0);
+            datePanel.Controls.Add(toDatePicker, 0, 1);
+            datePanel.Dock = DockStyle.Fill;
+            datePanel.Location = new Point(748, 48);
+            datePanel.Name = "datePanel";
+            datePanel.RowCount = 2;
+            datePanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            datePanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            datePanel.Size = new Size(144, 69);
+            datePanel.TabIndex = 9;
+            // 
+            // fromDatePicker
+            // 
+            fromDatePicker.Dock = DockStyle.Fill;
+            fromDatePicker.Format = DateTimePickerFormat.Short;
+            fromDatePicker.Location = new Point(3, 3);
+            fromDatePicker.Name = "fromDatePicker";
+            fromDatePicker.Size = new Size(138, 30);
+            fromDatePicker.TabIndex = 0;
+            // 
+            // toDatePicker
+            // 
+            toDatePicker.Dock = DockStyle.Fill;
+            toDatePicker.Format = DateTimePickerFormat.Short;
+            toDatePicker.Location = new Point(3, 37);
+            toDatePicker.Name = "toDatePicker";
+            toDatePicker.Size = new Size(138, 30);
+            toDatePicker.TabIndex = 1;
             // 
             // MainForm
             // 
@@ -269,6 +307,7 @@ namespace Practice
             menuStrip1.PerformLayout();
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            datePanel.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -291,5 +330,8 @@ namespace Practice
         private ToolStripMenuItem viewSeriesMenuItem;
         private TableLayoutPanel tableLayoutPanel1;
         private Button exportBtn;
+        private DateTimePicker fromDatePicker;
+        private DateTimePicker toDatePicker;
+        private TableLayoutPanel datePanel;
     }
 }

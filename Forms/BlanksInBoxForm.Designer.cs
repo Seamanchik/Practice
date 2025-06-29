@@ -31,6 +31,7 @@
             DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             blanksGridView = new DataGridView();
+            recipientFilterComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)blanksGridView).BeginInit();
             SuspendLayout();
             // 
@@ -62,15 +63,24 @@
             blanksGridView.DefaultCellStyle = dataGridViewCellStyle2;
             blanksGridView.EnableHeadersVisualStyles = false;
             blanksGridView.GridColor = Color.LightGray;
-            blanksGridView.Location = new Point(0, 0);
+            blanksGridView.Location = new Point(0, 50);
             blanksGridView.Name = "blanksGridView";
             blanksGridView.RowHeadersVisible = false;
             blanksGridView.RowHeadersWidth = 51;
             blanksGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            blanksGridView.Size = new Size(900, 400);
+            blanksGridView.Size = new Size(900, 350);
             blanksGridView.TabIndex = 0;
             blanksGridView.CellClick += blanksGridView_CellClick;
-            blanksGridView.CellValueChanged += blanksGridView_CellValueChanged;
+            // 
+            // recipientFilterComboBox
+            // 
+            recipientFilterComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            recipientFilterComboBox.Font = new Font("Segoe UI", 10F);
+            recipientFilterComboBox.Location = new Point(10, 10);
+            recipientFilterComboBox.Name = "recipientFilterComboBox";
+            recipientFilterComboBox.Size = new Size(300, 31);
+            recipientFilterComboBox.TabIndex = 1;
+            recipientFilterComboBox.SelectedIndexChanged += recipientFilterComboBox_SelectedIndexChanged;
             // 
             // BlanksInBoxForm
             // 
@@ -78,6 +88,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(245, 245, 255);
             ClientSize = new Size(900, 400);
+            Controls.Add(recipientFilterComboBox);
             Controls.Add(blanksGridView);
             Font = new Font("Segoe UI", 10F);
             MinimumSize = new Size(918, 440);
@@ -91,5 +102,6 @@
         #endregion
 
         private DataGridView blanksGridView;
+        private ComboBox recipientFilterComboBox;
     }
 }

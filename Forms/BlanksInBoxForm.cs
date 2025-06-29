@@ -1,6 +1,7 @@
 ﻿using Practice.Database;
 using Practice.ViewModels;
 using Practice.Models;
+using Practice.Helper;
 
 namespace Practice.Forms
 {
@@ -23,7 +24,16 @@ namespace Practice.Forms
         private void BlanksInBoxForm_Load(object sender, EventArgs e)
         {
             var blanks = DatabaseHelper.GetBlanksByBox(box);
+            var recipients = DatabaseHelper.GetRecipients();
+            recipientFilterComboBox.Items.Add("Нет");
+
+            foreach (var r in recipients)
+                recipientFilterComboBox.Items.Add(r.Name);
+
+            recipientFilterComboBox.SelectedIndex = 0;
             blanksGridView.DataSource = blanks;
+            DataGridHelper.SetColumnHeaders(blanksGridView, DataGridHelper.BlankHeaders);
+            blanksGridView.CellValueChanged += blanksGridView_CellValueChanged;
             datePicker.Visible = false;
             datePicker.Format = DateTimePickerFormat.Short;
             datePicker.TextChanged += DatePicker_TextChanged;
@@ -140,6 +150,24 @@ namespace Practice.Forms
 
             datePicker.Visible = false;
             datePickerVisible = false;
+        }
+
+        private void recipientFilterComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selected = recipientFilterComboBox.SelectedItem?.ToString() ?? "Нет";
+
+            var allBlanks = DatabaseHelper.GetBlanksByBox(box);
+
+            if (selected == "Нет")
+                blanksGridView.DataSource = allBlanks;
+            else
+            {
+                var filteredBlanks = allBlanks
+                    .Where(b => !string.IsNullOrEmpty(b.RecipientName) && b.RecipientName == selected)
+                    .ToList();
+
+                blanksGridView.DataSource = filteredBlanks;
+            }
         }
     }
 }

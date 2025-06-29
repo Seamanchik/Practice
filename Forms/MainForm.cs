@@ -1,6 +1,7 @@
 using Practice.Database;
 using Practice.Export;
 using Practice.Forms;
+using Practice.Helper;
 using Practice.Models;
 using Practice.ViewModels;
 
@@ -18,6 +19,7 @@ namespace Practice
             documentsComboBox.DataSource = DatabaseHelper.GetDocuments();
             seriesComboBox.DataSource = DatabaseHelper.GetSeries();
             LoadBlanksToGrid();
+            DataGridHelper.SetColumnHeaders(BlanksGridView, DataGridHelper.BoxHeaders);
         }
 
         private void LoadBlanksToGrid()
@@ -98,47 +100,150 @@ namespace Practice
 
         private void exportBtn_Click(object sender, EventArgs e)
         {
+            bool fromDateSelected = fromDatePicker.CustomFormat != " ";
+            bool toDateSelected = toDatePicker.CustomFormat != " ";
+
+            if (fromDateSelected != toDateSelected)
+            {
+                MessageBox.Show("Выберите обе даты: начальную и конечную.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            DateTime? fromDate = null;
+            DateTime? toDate = null;
+
+            if (fromDateSelected && toDateSelected)
+            {
+                fromDate = fromDatePicker.Value.Date;
+                toDate = toDatePicker.Value.Date;
+
+                if (fromDate > toDate)
+                {
+                    MessageBox.Show("Начальная дата не может быть позже конечной.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
             var documents = DatabaseHelper.GetDocuments();
             var blanks = DatabaseHelper.GetBlanks();
             var boxes = DatabaseHelper.GetBoxes();
             var recipients = DatabaseHelper.GetRecipients();
 
-            var documentFileMap = new Dictionary<string, string>();
-
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-            foreach (var doc in documents)
+            if (fromDate.HasValue && toDate.HasValue)
             {
-                string normalizedName = doc.Name.Replace("-", "_");
+                blanks = blanks
+                    .Where(b => b.Date.HasValue &&
+                                b.Date.Value.Date >= fromDate.Value &&
+                                b.Date.Value.Date <= toDate.Value)
+                    .ToList();
+            }
 
-                string fileName = $"Учет_бланков_строгой_отчетности_{normalizedName}_2025.xlsx";
+            var filledBlanks = blanks
+                .Where(b => !string.IsNullOrWhiteSpace(b.ProductName)
+                         && b.Date.HasValue
+                         && b.RecipientId.HasValue)
+                .ToList();
 
-                string projectPath = Path.Combine(projectDirectory, fileName);
-                string desktopPathFull = Path.Combine(desktopPath, fileName);
+            if (filledBlanks.Count == 0)
+            {
+                MessageBox.Show("Нет заполненных бланков в выбранном диапазоне.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
 
-                if (File.Exists(projectPath))
-                    documentFileMap[doc.Name] = projectPath;
-                else if (File.Exists(desktopPathFull))
-                    documentFileMap[doc.Name] = desktopPathFull;
+            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Учет_бланков_строгой_отчетности___.xlsx");
+            if (!File.Exists(templatePath))
+            {
+                MessageBox.Show("Шаблон Excel-файла не найден.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var blanksByDocument = filledBlanks
+                .GroupBy(blank =>
+                {
+                    var box = boxes.FirstOrDefault(b => b.Id == blank.BoxId);
+                    return box != null ? documents.FirstOrDefault(d => d.Id == box.DocumentId)?.Name : null;
+                })
+                .Where(g => !string.IsNullOrEmpty(g.Key))
+                .ToDictionary(g => g.Key!, g => g.ToList());
+
+            foreach (var entry in blanksByDocument)
+            {
+                string documentName = entry.Key;
+                var docBlanks = entry.Value;
+
+                string yearPart = "";
+                if (fromDate.HasValue && toDate.HasValue)
+                {
+                    int yearFrom = fromDate.Value.Year;
+                    int yearTo = toDate.Value.Year;
+                    yearPart = (yearFrom == yearTo) ? yearFrom.ToString() : $"{yearFrom}-{yearTo}";
+                }
                 else
-                    MessageBox.Show($"Файл для документа \"{doc.Name}\" не найден:\n{fileName}", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                {
+                    var years = docBlanks
+                        .Where(b => b.Date.HasValue)
+                        .Select(b => b.Date!.Value.Year)
+                        .Distinct()
+                        .OrderBy(y => y)
+                        .ToList();
+
+                    yearPart = (years.Count == 1) ? years[0].ToString() : $"{years.First()}-{years.Last()}";
+                }
+
+                string normalizedName = documentName.Replace("-", "_");
+                string defaultFileName = $"Учет_бланков_строгой_отчетности_{normalizedName}_{yearPart}.xlsx";
+                string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), defaultFileName);
+
+                var result = MessageBox.Show(
+                    $"Сохранить файл для типа документа \"{documentName}\" как:\n\n{defaultFileName} ?",
+                    "Сохранение",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question);
+
+                string finalFilePath = "";
+
+                if (result == DialogResult.Yes)
+                    finalFilePath = defaultPath;
+                else if (result == DialogResult.No)
+                {
+                    using SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.Title = "Сохранить как";
+                    sfd.Filter = "Excel файл (*.xlsx)|*.xlsx";
+                    sfd.FileName = defaultFileName;
+
+                    if (sfd.ShowDialog() != DialogResult.OK)
+                        continue;
+
+                    finalFilePath = sfd.FileName;
+                }
+                else
+                    continue;
+
+                try
+                {
+                    File.Copy(templatePath, finalFilePath, overwrite: true);
+
+                    var document = documents.FirstOrDefault(d => d.Name == documentName);
+                    if (document == null)
+                        continue;
+
+                    var relatedBoxes = boxes.Where(b => b.DocumentId == document.Id).ToList();
+
+                    ExcelExporter.ExportFilledBlanksByDocumentType(
+                        new Dictionary<string, string> { { documentName, finalFilePath } },
+                        docBlanks,
+                        relatedBoxes,
+                        new List<Document> { document },
+                        recipients
+                    );
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при сохранении файла:\n{ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
-            if (documentFileMap.Count > 0)
-            {
-                ExcelExporter.ExportFilledBlanksByDocumentType(
-                    documentFileMap,
-                    blanks,
-                    boxes,
-                    documents,
-                    recipients
-                );
-
-                MessageBox.Show("Экспорт завершён.", "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-                MessageBox.Show("Не найдено ни одного подходящего Excel-файла для экспорта.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show("Экспорт завершён.", "Успешно", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void viewDocumentMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Document).ShowDialog();

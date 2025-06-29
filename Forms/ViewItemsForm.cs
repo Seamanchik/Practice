@@ -1,4 +1,5 @@
 ﻿using Practice.Database;
+using Practice.Helper;
 
 namespace Practice.Forms
 {
@@ -12,6 +13,7 @@ namespace Practice.Forms
             _itemType = itemType;
             SetupForm();
             LoadData();
+            DataGridHelper.SetColumnHeaders(viewItemGrid, DataGridHelper.ItemHeaders);
         }
 
         private void SetupForm()

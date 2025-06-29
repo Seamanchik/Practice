@@ -6,11 +6,11 @@ namespace Practice.Export
     public static class ExcelExporter
     {
         public static void ExportFilledBlanksByDocumentType(
-    Dictionary<string, string> documentFileMap,
-    List<Models.Blank> blanks,
-    List<Box> boxes,
-    List<Document> documents,
-    List<Recipient> recipients)
+     Dictionary<string, string> documentFileMap,
+     List<Models.Blank> blanks,
+     List<Box> boxes,
+     List<Document> documents,
+     List<Recipient> recipients)
         {
             foreach (var docEntry in documentFileMap)
             {
@@ -32,6 +32,16 @@ namespace Practice.Export
                 {
                     MessageBox.Show($"Лист 'Расшифровка карточки' не найден в файле {filePath}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     continue;
+                }
+
+                var titleCell = worksheet.CellsUsed()
+                    .FirstOrDefault(c => c.GetValue<string>().Trim() == "Учет бланков строгой отчетности");
+
+                if (titleCell != null)
+                {
+                    titleCell.Value = $"Учет бланков строгой отчетности {documentName}";
+                    titleCell.Style.Font.FontName = "Arial Cyr";
+                    titleCell.Style.Font.FontSize = 14;
                 }
 
                 var exportedKeys = new HashSet<string>();
@@ -71,7 +81,7 @@ namespace Practice.Export
                     string key = $"{box.Series}_{blank.BlankNumber}";
                     if (exportedKeys.Contains(key)) continue;
 
-                    worksheet.Cell(currentRow, 1).Value = ppNumber++; // № п.п.
+                    worksheet.Cell(currentRow, 1).Value = ppNumber++;
                     worksheet.Cell(currentRow, 2).Value = documentName;
                     worksheet.Cell(currentRow, 3).Value = blank.Date.Value.ToString("dd.MM.yyyy");
                     worksheet.Cell(currentRow, 4).Value = box.Series;
