@@ -1,4 +1,4 @@
-using Practice.Database;
+ï»¿using Practice.Database;
 using Practice.Export;
 using Practice.Forms;
 using Practice.Helper;
@@ -17,7 +17,11 @@ namespace Practice
         private void Form1_Load(object sender, EventArgs e)
         {
             documentsComboBox.DataSource = DatabaseHelper.GetDocuments();
+            documentForExportComboBox.DataSource = DatabaseHelper.GetDocuments();
             seriesComboBox.DataSource = DatabaseHelper.GetSeries();
+            documentsComboBox.SelectedIndex = -1;
+            documentForExportComboBox.SelectedIndex = -1;
+            seriesComboBox.SelectedIndex = -1;
             LoadBlanksToGrid();
             DataGridHelper.SetColumnHeaders(BlanksGridView, DataGridHelper.BoxHeaders);
         }
@@ -44,19 +48,19 @@ namespace Practice
             if (!int.TryParse(StartNumberTextBox.Text.Trim(), out int startNumber) ||
                 !int.TryParse(EndNumberTextBox.Text.Trim(), out int endNumber))
             {
-                MessageBox.Show("Ââåäèòå êîððåêòíûå ÷èñëîâûå çíà÷åíèÿ!", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ÐºÐ¾Ñ€Ñ€ÐµÐºÑ‚Ð½Ñ‹Ðµ Ñ‡Ð¸ÑÐ»Ð¾Ð²Ñ‹Ðµ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ!", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (startNumber >= endNumber)
             {
-                MessageBox.Show("Íà÷àëüíûé íîìåð äîëæåí áûòü ìåíüøå êîíå÷íîãî!", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ñ‹Ð¹ Ð½Ð¾Ð¼ÐµÑ€ Ð´Ð¾Ð»Ð¶ÐµÐ½ Ð±Ñ‹Ñ‚ÑŒ Ð¼ÐµÐ½ÑŒÑˆÐµ ÐºÐ¾Ð½ÐµÑ‡Ð½Ð¾Ð³Ð¾!", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (documentsComboBox.SelectedItem == null || seriesComboBox.SelectedItem == null)
             {
-                MessageBox.Show("Âûáåðèòå ñåðèþ è òèï äîêóìåíòà!", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÐµÑ€Ð¸ÑŽ Ð¸ Ñ‚Ð¸Ð¿ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°!", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -65,14 +69,14 @@ namespace Practice
 
             if (!DatabaseHelper.AreBlanksNumberRangeAvailable(startNumber, endNumber))
             {
-                MessageBox.Show("Â óêàçàííîì äèàïàçîíå óæå åñòü áëàíêè!", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ð’ ÑƒÐºÐ°Ð·Ð°Ð½Ð½Ð¾Ð¼ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ðµ ÑƒÐ¶Ðµ ÐµÑÑ‚ÑŒ Ð±Ð»Ð°Ð½ÐºÐ¸!", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             DatabaseHelper.AddBoxWithBlanks(startNumber, endNumber, series!, documentId.Id);
 
             LoadBlanksToGrid();
-            MessageBox.Show("Êîðîáêà è áëàíêè óñïåøíî äîáàâëåíû", "Óñïåõ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("ÐšÐ¾Ñ€Ð¾Ð±ÐºÐ° Ð¸ Ð±Ð»Ð°Ð½ÐºÐ¸ ÑƒÑÐ¿ÐµÑˆÐ½Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ñ‹", "Ð£ÑÐ¿ÐµÑ…", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             StartNumberTextBox.Clear();
             EndNumberTextBox.Clear();
@@ -105,7 +109,7 @@ namespace Practice
 
             if (fromDateSelected != toDateSelected)
             {
-                MessageBox.Show("Âûáåðèòå îáå äàòû: íà÷àëüíóþ è êîíå÷íóþ.", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð¾Ð±Ðµ Ð´Ð°Ñ‚Ñ‹: Ð½Ð°Ñ‡Ð°Ð»ÑŒÐ½ÑƒÑŽ Ð¸ ÐºÐ¾Ð½ÐµÑ‡Ð½ÑƒÑŽ.", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -119,7 +123,7 @@ namespace Practice
 
                 if (fromDate > toDate)
                 {
-                    MessageBox.Show("Íà÷àëüíàÿ äàòà íå ìîæåò áûòü ïîçæå êîíå÷íîé.", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("ÐÐ°Ñ‡Ð°Ð»ÑŒÐ½Ð°Ñ Ð´Ð°Ñ‚Ð° Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¿Ð¾Ð·Ð¶Ðµ ÐºÐ¾Ð½ÐµÑ‡Ð½Ð¾Ð¹.", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
@@ -128,6 +132,20 @@ namespace Practice
             var blanks = DatabaseHelper.GetBlanks();
             var boxes = DatabaseHelper.GetBoxes();
             var recipients = DatabaseHelper.GetRecipients();
+
+            var selectedDocumentName = documentForExportComboBox.SelectedItem?.ToString();
+            if (string.IsNullOrWhiteSpace(selectedDocumentName))
+            {
+                MessageBox.Show("ÐŸÐ¾Ð¶Ð°Ð»ÑƒÐ¹ÑÑ‚Ð°, Ð²Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ñ‚Ð¸Ð¿ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð° Ð´Ð»Ñ ÑÐºÑÐ¿Ð¾Ñ€Ñ‚Ð°.", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedDocument = documents.FirstOrDefault(d => d.Name == selectedDocumentName);
+            if (selectedDocument == null)
+            {
+                MessageBox.Show("Ð’Ñ‹Ð±Ñ€Ð°Ð½Ð½Ñ‹Ð¹ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½ Ð² Ð±Ð°Ð·Ðµ Ð´Ð°Ð½Ð½Ñ‹Ñ….", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (fromDate.HasValue && toDate.HasValue)
             {
@@ -146,105 +164,76 @@ namespace Practice
 
             if (filledBlanks.Count == 0)
             {
-                MessageBox.Show("Íåò çàïîëíåííûõ áëàíêîâ â âûáðàííîì äèàïàçîíå.", "Èíôîðìàöèÿ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("ÐÐµÑ‚ Ð·Ð°Ð¿Ð¾Ð»Ð½ÐµÐ½Ð½Ñ‹Ñ… Ð±Ð»Ð°Ð½ÐºÐ¾Ð² Ð² Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼ Ð´Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½Ðµ.", "Ð˜Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
-            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Ó÷åò_áëàíêîâ_ñòðîãîé_îò÷åòíîñòè___.xlsx");
+            var relevantBoxes = boxes.Where(b => b.DocumentId == selectedDocument.Id).ToList();
+            var relevantBlanks = filledBlanks.Where(b => relevantBoxes.Any(box => box.Id == b.BoxId)).ToList();
+
+            if (relevantBlanks.Count == 0)
+            {
+                MessageBox.Show("ÐÐµÑ‚ Ð·Ð°Ð¿Ð¾Ð»Ð½ÐµÐ½Ð½Ñ‹Ñ… Ð±Ð»Ð°Ð½ÐºÐ¾Ð² Ð¿Ð¾ Ð²Ñ‹Ð±Ñ€Ð°Ð½Ð½Ð¾Ð¼Ñƒ Ñ‚Ð¸Ð¿Ñƒ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°.", "Ð˜Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸Ñ", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            string yearPart = "";
+            if (fromDate.HasValue && toDate.HasValue)
+            {
+                int yearFrom = fromDate.Value.Year;
+                int yearTo = toDate.Value.Year;
+                yearPart = (yearFrom == yearTo) ? yearFrom.ToString() : $"{yearFrom}-{yearTo}";
+            }
+            else
+            {
+                var years = relevantBlanks
+                    .Where(b => b.Date.HasValue)
+                    .Select(b => b.Date!.Value.Year)
+                    .Distinct()
+                    .OrderBy(y => y)
+                    .ToList();
+
+                yearPart = (years.Count == 1) ? years[0].ToString() : $"{years.First()}-{years.Last()}";
+            }
+
+            string normalizedName = selectedDocumentName.Replace("-", "_");
+            string defaultFileName = $"Ð£Ñ‡ÐµÑ‚_Ð±Ð»Ð°Ð½ÐºÐ¾Ð²_ÑÑ‚Ñ€Ð¾Ð³Ð¾Ð¹_Ð¾Ñ‚Ñ‡ÐµÑ‚Ð½Ð¾ÑÑ‚Ð¸_{normalizedName}_{yearPart}.xlsx";
+
+            using SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Title = "Ð¡Ð¾Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑŒ ÐºÐ°Ðº";
+            sfd.Filter = "Excel Ñ„Ð°Ð¹Ð» (*.xlsx)|*.xlsx";
+            sfd.FileName = defaultFileName;
+
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            string templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Ð£Ñ‡ÐµÑ‚_Ð±Ð»Ð°Ð½ÐºÐ¾Ð²_ÑÑ‚Ñ€Ð¾Ð³Ð¾Ð¹_Ð¾Ñ‚Ñ‡ÐµÑ‚Ð½Ð¾ÑÑ‚Ð¸___.xlsx");
             if (!File.Exists(templatePath))
             {
-                MessageBox.Show("Øàáëîí Excel-ôàéëà íå íàéäåí.", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Ð¨Ð°Ð±Ð»Ð¾Ð½ Excel-Ñ„Ð°Ð¹Ð»Ð° Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½.", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var blanksByDocument = filledBlanks
-                .GroupBy(blank =>
-                {
-                    var box = boxes.FirstOrDefault(b => b.Id == blank.BoxId);
-                    return box != null ? documents.FirstOrDefault(d => d.Id == box.DocumentId)?.Name : null;
-                })
-                .Where(g => !string.IsNullOrEmpty(g.Key))
-                .ToDictionary(g => g.Key!, g => g.ToList());
-
-            foreach (var entry in blanksByDocument)
+            try
             {
-                string documentName = entry.Key;
-                var docBlanks = entry.Value;
+                File.Copy(templatePath, sfd.FileName, overwrite: true);
 
-                string yearPart = "";
-                if (fromDate.HasValue && toDate.HasValue)
-                {
-                    int yearFrom = fromDate.Value.Year;
-                    int yearTo = toDate.Value.Year;
-                    yearPart = (yearFrom == yearTo) ? yearFrom.ToString() : $"{yearFrom}-{yearTo}";
-                }
-                else
-                {
-                    var years = docBlanks
-                        .Where(b => b.Date.HasValue)
-                        .Select(b => b.Date!.Value.Year)
-                        .Distinct()
-                        .OrderBy(y => y)
-                        .ToList();
+                ExcelExporter.ExportFilledBlanksByDocumentType(
+                    new Dictionary<string, string> { { selectedDocumentName, sfd.FileName } },
+                    relevantBlanks,
+                    relevantBoxes,
+                    new List<Document> { selectedDocument },
+                    recipients
+                );
 
-                    yearPart = (years.Count == 1) ? years[0].ToString() : $"{years.First()}-{years.Last()}";
-                }
-
-                string normalizedName = documentName.Replace("-", "_");
-                string defaultFileName = $"Ó÷åò_áëàíêîâ_ñòðîãîé_îò÷åòíîñòè_{normalizedName}_{yearPart}.xlsx";
-                string defaultPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), defaultFileName);
-
-                var result = MessageBox.Show(
-                    $"Ñîõðàíèòü ôàéë äëÿ òèïà äîêóìåíòà \"{documentName}\" êàê:\n\n{defaultFileName} ?",
-                    "Ñîõðàíåíèå",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question);
-
-                string finalFilePath = "";
-
-                if (result == DialogResult.Yes)
-                    finalFilePath = defaultPath;
-                else if (result == DialogResult.No)
-                {
-                    using SaveFileDialog sfd = new SaveFileDialog();
-                    sfd.Title = "Ñîõðàíèòü êàê";
-                    sfd.Filter = "Excel ôàéë (*.xlsx)|*.xlsx";
-                    sfd.FileName = defaultFileName;
-
-                    if (sfd.ShowDialog() != DialogResult.OK)
-                        continue;
-
-                    finalFilePath = sfd.FileName;
-                }
-                else
-                    continue;
-
-                try
-                {
-                    File.Copy(templatePath, finalFilePath, overwrite: true);
-
-                    var document = documents.FirstOrDefault(d => d.Name == documentName);
-                    if (document == null)
-                        continue;
-
-                    var relatedBoxes = boxes.Where(b => b.DocumentId == document.Id).ToList();
-
-                    ExcelExporter.ExportFilledBlanksByDocumentType(
-                        new Dictionary<string, string> { { documentName, finalFilePath } },
-                        docBlanks,
-                        relatedBoxes,
-                        new List<Document> { document },
-                        recipients
-                    );
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Îøèáêà ïðè ñîõðàíåíèè ôàéëà:\n{ex.Message}", "Îøèáêà", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show("Ð­ÐºÑÐ¿Ð¾Ñ€Ñ‚ Ð·Ð°Ð²ÐµÑ€ÑˆÑ‘Ð½.", "Ð£ÑÐ¿ÐµÑˆÐ½Ð¾", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            MessageBox.Show("Ýêñïîðò çàâåðø¸í.", "Óñïåøíî", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"ÐžÑˆÐ¸Ð±ÐºÐ° Ð¿Ñ€Ð¸ ÑÐ¾Ñ…Ñ€Ð°Ð½ÐµÐ½Ð¸Ð¸ Ñ„Ð°Ð¹Ð»Ð°:\n{ex.Message}", "ÐžÑˆÐ¸Ð±ÐºÐ°", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         private void viewDocumentMenuItem_Click(object sender, EventArgs e) => new ViewItemsForm(AddItemType.Document).ShowDialog();
 

@@ -51,6 +51,7 @@ namespace Practice
             datePanel = new TableLayoutPanel();
             fromDatePicker = new DateTimePicker();
             toDatePicker = new DateTimePicker();
+            documentForExportComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)BlanksGridView).BeginInit();
             menuStrip1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -229,6 +230,7 @@ namespace Practice
             tableLayoutPanel1.Controls.Add(addButton, 4, 0);
             tableLayoutPanel1.Controls.Add(exportBtn, 5, 0);
             tableLayoutPanel1.Controls.Add(datePanel, 5, 1);
+            tableLayoutPanel1.Controls.Add(documentForExportComboBox, 4, 1);
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 28);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -287,6 +289,14 @@ namespace Practice
             toDatePicker.Size = new Size(138, 30);
             toDatePicker.TabIndex = 1;
             // 
+            // documentForExportComboBox
+            // 
+            documentForExportComboBox.FormattingEnabled = true;
+            documentForExportComboBox.Location = new Point(600, 48);
+            documentForExportComboBox.Name = "documentForExportComboBox";
+            documentForExportComboBox.Size = new Size(142, 31);
+            documentForExportComboBox.TabIndex = 10;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(9F, 23F);
@@ -333,5 +343,6 @@ namespace Practice
         private DateTimePicker fromDatePicker;
         private DateTimePicker toDatePicker;
         private TableLayoutPanel datePanel;
+        private ComboBox documentForExportComboBox;
     }
 }
